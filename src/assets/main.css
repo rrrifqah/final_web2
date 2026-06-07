@@ -1,35 +1,87 @@
-@import './base.css';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #FFFFFF;
+  --surface: #F9F9F9;
+  --accent-red: #CC0000;
+  --accent-black: #000000;
+  --border-color: #000000;
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--accent-black);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
 }
 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
+/* Force brutalist styles globally */
+*, *::before, *::after {
+  border-radius: 0px !important;
 }
 
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
+/* Typography elements */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.05em;
+}
 
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
+code, pre, .font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Custom classes */
+.brutalist-card {
+  border: 4px solid var(--border-color);
+  background-color: var(--bg-primary);
+  transition: all 150ms ease-in-out;
+}
+
+.brutalist-button {
+  border: 4px solid var(--border-color);
+  background-color: var(--accent-red);
+  color: #FFFFFF;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.05em;
+  transition: all 150ms ease-in-out;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brutalist-button:hover:not(:disabled) {
+  background-color: var(--accent-black);
+}
+
+.brutalist-button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.brutalist-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Custom Scrollbar for brutalist look */
+::-webkit-scrollbar {
+  width: 12px;
+}
+::-webkit-scrollbar-track {
+  background: var(--surface);
+  border-left: 4px solid var(--border-color);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--accent-black);
+  border: 2px solid var(--surface);
 }

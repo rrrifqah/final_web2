@@ -4,9 +4,12 @@ import router from '../router/index.js'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
+    /** @type {any} */
     user: null,
+    /** @type {string|null} */
     token: localStorage.getItem('token') || null,
     isLoggedIn: !!localStorage.getItem('token'),
+    /** @type {string|null} */
     role: localStorage.getItem('role') || null
   }),
 

@@ -109,7 +109,7 @@ const handleLogin = async () => {
         authStore.token = mockToken
         authStore.isLoggedIn = true
         authStore.role = role
-        authStore.user = {
+        ;(authStore as any).user = {
           name: loginForm.email.split('@')[0]?.toUpperCase() || 'USER_PROTOCOL',
           email: loginForm.email,
           role: role

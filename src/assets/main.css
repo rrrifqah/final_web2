@@ -1,35 +1,88 @@
-@import './base.css';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #FFFFFF;
+  --surface: #F9F9F9;
+  --accent-red: #CC0000;
+  --accent-black: #000000;
+  --border-color: #000000;
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
+body {
+  background-color: var(--bg-primary);
+  color: var(--accent-black);
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
 }
 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
+/* Brutalist resets */
+input, select, textarea, button {
+  font-family: inherit;
+  border-radius: 0 !important; /* rounded-none */
 }
 
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
+/* Global utility styles */
+.brutalist-border {
+  border: 4px solid var(--border-color);
+}
 
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
+.brutalist-card {
+  border: 4px solid var(--border-color);
+  background-color: var(--bg-primary);
+  border-radius: 0;
+  transition: all 0.15s ease-in-out;
+}
+
+.brutalist-button {
+  border: 4px solid var(--border-color);
+  background-color: var(--bg-primary);
+  color: var(--accent-black);
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  border-radius: 0;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+}
+
+.brutalist-button:hover {
+  background-color: var(--accent-black);
+  color: var(--bg-primary);
+}
+
+.brutalist-button:active {
+  transform: scale(0.95);
+}
+
+.brutalist-button-red {
+  border: 4px solid var(--border-color);
+  background-color: var(--accent-red);
+  color: white;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  border-radius: 0;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+}
+
+.brutalist-button-red:hover {
+  background-color: var(--accent-black);
+  color: white;
+}
+
+.brutalist-button-red:active {
+  transform: scale(0.95);
+}
+
+.heading-brutalist {
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.05em; /* tracking-tighter */
 }

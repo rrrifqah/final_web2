@@ -80,7 +80,7 @@ const navigateToCart = () => {
             @click="toggleUserDropdown" 
             class="hidden md:flex items-center px-4 py-2 border-4 border-black font-bold uppercase hover:bg-black hover:text-white transition-all active:scale-95 bg-white text-black text-sm"
           >
-            <span>{{ authStore.user?.name ? authStore.user.name.split(' ')[0] : 'USER' }}</span>
+            <span>{{ (authStore.user as any)?.name ? (authStore.user as any).name.split(' ')[0] : 'USER' }}</span>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4 ml-2">
               <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
             </svg>
@@ -93,7 +93,7 @@ const navigateToCart = () => {
           >
             <div class="p-3 border-b-2 border-black font-bold text-xs text-gray-500 uppercase tracking-wider bg-[#F9F9F9]">
               Signed in as:<br>
-              <span class="text-black font-black block truncate text-sm mt-1">{{ authStore.user?.email }}</span>
+              <span class="text-black font-black block truncate text-sm mt-1">{{ (authStore.user as any)?.email }}</span>
             </div>
             
             <!-- Admin or Courier dashboards -->
@@ -196,7 +196,7 @@ const navigateToCart = () => {
       <div v-if="authStore.isLoggedIn" class="space-y-4">
         <div class="p-3 border-4 border-black bg-[#F9F9F9] font-mono text-xs">
           <p class="font-bold text-gray-500 uppercase">ACTIVE_SESSION:</p>
-          <p class="font-black text-black break-all">{{ authStore.user?.email }}</p>
+          <p class="font-black text-black break-all">{{ (authStore.user as any)?.email }}</p>
           <p class="font-bold text-[#CC0000] uppercase mt-1">ROLE: {{ authStore.role }}</p>
         </div>
         

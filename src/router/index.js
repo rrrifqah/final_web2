@@ -51,7 +51,7 @@ const router = createRouter({
   }
 })
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, from) => {
   const authStore = useAuthStore()
 
   // Make sure to fetch user if logged in but state is empty
@@ -65,15 +65,18 @@ router.beforeEach(async (to, from, next) => {
 
   const isAuthenticated = authStore.isLoggedIn
 
-  if (to.meta.requiresAuth && !isAuthenticated) {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  const isGuestOnly = to.matched.some(record => record.meta.guestOnly)
+
+  if (requiresAuth && !isAuthenticated) {
     // Save intended URL
     localStorage.setItem('intended_url', to.fullPath)
-    next('/login')
-  } else if (to.meta.guestOnly && isAuthenticated) {
+    return '/login'
+  } else if (isGuestOnly && isAuthenticated) {
     // Redirect logged-in users away from login page
-    next('/')
+    return '/'
   } else {
-    next()
+    return true
   }
 })
 

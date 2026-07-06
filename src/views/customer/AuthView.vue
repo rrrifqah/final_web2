@@ -86,7 +86,7 @@ const handleLogin = async () => {
     await authStore.login(loginForm.email, loginForm.password)
     showToast('SESSION SUCCESSFULLY INITIATED')
   } catch (error: any) {
-    console.warn('Backend login API unavailable, using developer mock bypass:', error)
+    console.error('Backend login API unavailable or invalid credentials:', error)
     
     // Increase failed attempts
     failedAttempts.value++
@@ -95,49 +95,8 @@ const handleLogin = async () => {
       errors.value.general = 'ACCOUNT_LOCKED: EXCEEDED 5 AUTHENTICATION FAILURES. CORE ENCRYPTION RESET REQUIRED.'
       showToast('ACCOUNT SHUTDOWN INITIATED')
     } else {
-      // Mock bypass if credentials have length >= 8 and valid format
-      if (loginForm.password.length >= 8) {
-        // Successful simulation
-        const mockToken = 'mock_jwt_' + Math.random().toString(36).substring(2)
-        let role = 'customer'
-        if (loginForm.email.includes('admin')) {
-          role = 'admin'
-        } else if (loginForm.email.includes('kurir') || loginForm.email.includes('courier')) {
-          role = 'kurir'
-        }
-
-        authStore.token = mockToken
-        authStore.isLoggedIn = true
-        authStore.role = role
-        ;(authStore as any).user = {
-          name: loginForm.email.split('@')[0]?.toUpperCase() || 'USER_PROTOCOL',
-          email: loginForm.email,
-          role: role
-        }
-        localStorage.setItem('token', mockToken)
-        localStorage.setItem('role', role)
-
-        showToast('DEVELOPER MOCK SESSION ACTIVE')
-        failedAttempts.value = 0 // reset
-        
-        // Redirect
-        if (role === 'admin') {
-          router.push('/admin/dashboard')
-        } else if (role === 'kurir') {
-          router.push('/courier/dashboard')
-        } else {
-          const intended = localStorage.getItem('intended_url')
-          if (intended) {
-            localStorage.removeItem('intended_url')
-            router.push(intended)
-          } else {
-            router.push('/')
-          }
-        }
-      } else {
-        errors.value.general = `ACCESS DENIED. INVALID CREDENTIALS. RETRIES REMAINING: ${5 - failedAttempts.value}`
-        showToast('CREDENTIAL RETRY FAILED')
-      }
+      errors.value.general = `ACCESS DENIED. INVALID CREDENTIALS. RETRIES REMAINING: ${5 - failedAttempts.value}`
+      showToast('CREDENTIAL RETRY FAILED')
     }
   } finally {
     isLoading.value = false
@@ -192,11 +151,9 @@ const handleRegister = async () => {
     showToast('ACCOUNT SUCCESSFULLY CREATED')
     switchTab('login')
   } catch (error: any) {
-    console.warn('Backend registration API unavailable, using mock fallback:', error)
-    
-    // Simulate register success offline
-    showToast('OFFLINE REGISTRATION COMPLETE. SESSION REDIRECT.')
-    switchTab('login')
+    console.error('Backend registration API failed:', error)
+    errors.value.general = 'REGISTRATION FAILED. PLEASE VERIFY DETAILS OR TRY AGAIN LATER.'
+    showToast('REGISTRATION PROCESS FAILED')
   } finally {
     isLoading.value = false
   }

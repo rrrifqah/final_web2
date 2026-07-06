@@ -37,20 +37,20 @@ const fetchData = async () => {
   try {
     const productsRes = await api.get('/products', { params: { featured: true, limit: 8 } })
     const data = productsRes.data?.data || productsRes.data
-    featuredProducts.value = Array.isArray(data) && data.length > 0 ? data : mockProducts
+    featuredProducts.value = Array.isArray(data) && data.length > 0 ? data : []
   } catch (error) {
-    console.warn('Could not contact API for featured products, falling back to mock products:', error)
-    featuredProducts.value = mockProducts
+    console.error('Could not contact API for featured products:', error)
+    featuredProducts.value = []
   }
 
   // API Fetch for categories
   try {
     const categoriesRes = await api.get('/categories')
     const data = categoriesRes.data?.data || categoriesRes.data
-    categories.value = Array.isArray(data) && data.length > 0 ? data : mockCategories
+    categories.value = Array.isArray(data) && data.length > 0 ? data : []
   } catch (error) {
-    console.warn('Could not contact API for categories, falling back to mock categories:', error)
-    categories.value = mockCategories
+    console.error('Could not contact API for categories:', error)
+    categories.value = []
   } finally {
     // Artificial 800ms delay to display the custom brutalist loading skeleton
     setTimeout(() => {
@@ -141,12 +141,25 @@ const handleCategoryClick = (slug: string) => {
       </div>
 
       <!-- Product Cards Grid -->
-      <div v-else class="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div v-else-if="featuredProducts.length > 0" class="grid grid-cols-2 md:grid-cols-4 gap-6">
         <ProductCard 
           v-for="product in featuredProducts" 
           :key="product.id" 
           :product="product" 
         />
+      </div>
+
+      <!-- Empty State -->
+      <div v-else class="border-4 border-black bg-white py-16 px-4 flex flex-col items-center justify-center space-y-4 shadow-[6px_6px_0px_#CC0000] text-center">
+        <div class="bg-[#CC0000] text-white border-2 border-black font-mono text-xs px-3 py-1 font-bold select-none tracking-widest uppercase">
+          NO_DATA_AVAILABLE
+        </div>
+        <h2 class="text-2xl font-black uppercase tracking-tight text-black">
+          NO FEATURED PRODUCTS FOUND.
+        </h2>
+        <p class="text-sm font-medium text-gray-500 max-w-md">
+          The database is currently empty or unavailable. Please check backend connection.
+        </p>
       </div>
     </section>
 
@@ -159,7 +172,7 @@ const handleCategoryClick = (slug: string) => {
       </div>
 
       <!-- Categories 3 Column Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div v-if="categories.length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div 
           v-for="category in categories" 
           :key="category.id"
@@ -173,6 +186,19 @@ const handleCategoryClick = (slug: string) => {
             // OPEN_PROTOCOL_CATALOG
           </span>
         </div>
+      </div>
+      
+      <!-- Empty State -->
+      <div v-else class="border-4 border-black bg-white py-16 px-4 flex flex-col items-center justify-center space-y-4 shadow-[6px_6px_0px_#CC0000] text-center">
+        <div class="bg-[#CC0000] text-white border-2 border-black font-mono text-xs px-3 py-1 font-bold select-none tracking-widest uppercase">
+          NO_CATEGORIES_AVAILABLE
+        </div>
+        <h2 class="text-2xl font-black uppercase tracking-tight text-black">
+          NO CATEGORIES FOUND.
+        </h2>
+        <p class="text-sm font-medium text-gray-500 max-w-md">
+          The database is currently empty or unavailable. Please check backend connection.
+        </p>
       </div>
     </section>
 

@@ -77,11 +77,15 @@ const fetchProducts = async () => {
       totalPages.value = response.data.last_page || Math.ceil(totalProducts.value / 6)
     } else {
       // Empty response or empty database
-      applyLocalFiltering()
+      products.value = []
+      totalProducts.value = 0
+      totalPages.value = 1
     }
   } catch (error) {
-    console.warn('API error, falling back to local mock filtering:', error)
-    applyLocalFiltering()
+    console.error('API error:', error)
+    products.value = []
+    totalProducts.value = 0
+    totalPages.value = 1
   } finally {
     // Delay to let visual transition breathe
     setTimeout(() => {
@@ -90,56 +94,7 @@ const fetchProducts = async () => {
   }
 }
 
-// Client-side filtering fallback for demo robustness
-const applyLocalFiltering = () => {
-  let result = [...mockCatalogProducts]
 
-  // Category Filter
-  if (filters.category) {
-    result = result.filter(p => p.category === filters.category)
-  }
-
-  // Size Filter
-  if (filters.size.length > 0) {
-    result = result.filter(p => p.sizes?.some(s => filters.size.includes(s)))
-  }
-
-  // Color Filter
-  if (filters.color.length > 0) {
-    result = result.filter(p => p.colors?.some(c => filters.color.includes(c)))
-  }
-
-  // Search Filter
-  if (filters.search) {
-    const query = filters.search.toLowerCase()
-    result = result.filter(p => p.name.toLowerCase().includes(query) || p.sku.toLowerCase().includes(query))
-  }
-
-  // Price Filter
-  result = result.filter(p => p.price >= filters.min_price && p.price <= filters.max_price)
-
-  // Sort Filter
-  if (filters.sort === 'terbaru') {
-    result.sort((a, b) => b.id - a.id)
-  } else if (filters.sort === 'harga_rendah') {
-    result.sort((a, b) => a.price - b.price)
-  } else if (filters.sort === 'harga_tinggi') {
-    result.sort((a, b) => b.price - a.price)
-  } else if (filters.sort === 'nama') {
-    result.sort((a, b) => a.name.localeCompare(b.name))
-  }
-
-  // Pagination
-  const itemsPerPage = 6
-  totalProducts.value = result.length
-  totalPages.value = Math.ceil(result.length / itemsPerPage) || 1
-
-  // Handle page boundaries
-  if (filters.page > totalPages.value) filters.page = 1
-
-  const start = (filters.page - 1) * itemsPerPage
-  products.value = result.slice(start, start + itemsPerPage)
-}
 
 // Watch filters object and trigger debounce query
 let debounceTimer: any = null
@@ -202,9 +157,9 @@ onMounted(async () => {
   try {
     const res = await api.get('/categories')
     const data = res.data?.data || res.data
-    categories.value = Array.isArray(data) && data.length > 0 ? data : mockCategories
+    categories.value = Array.isArray(data) && data.length > 0 ? data : []
   } catch (error) {
-    categories.value = mockCategories
+    categories.value = []
   }
 
   fetchProducts()

@@ -34,11 +34,10 @@ export const useCartStore = defineStore('cart', {
       }
     },
 
-    async addToCart(variantId, quantity = 1) {
+    async addToCart(productId, quantity = 1) {
       try {
         const response = await api.post('/cart', {
-          product_variant_id: variantId,
-          variant_id: variantId, // Fallback support
+          product_id: productId,
           quantity
         })
         await this.fetchCart()

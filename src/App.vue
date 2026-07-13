@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
-import Toast from '@/components/shared/Toast.vue'
 import Navbar from './components/Navbar.vue'
 import Footer from './components/Footer.vue'
+import AuthModal from './components/AuthModal.vue'
 import { onMounted } from 'vue'
-import { useAuthStore } from '@/stores/auth'
-import { useCartStore } from '@/stores/cart'
+import { useAuthStore } from './stores/auth.js'
+import { useCartStore } from './stores/cart.js'
 
 const authStore = useAuthStore()
 const cartStore = useCartStore()
@@ -24,14 +23,15 @@ onMounted(async () => {
 
 <template>
   <div class="flex flex-col min-h-screen bg-white text-black">
-    <Navbar />
+    <Navbar v-if="!$route.meta.hideCustomerLayout" />
     
-    <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <RouterView />
+    <main v-if="!$route.meta.hideCustomerLayout" class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <router-view />
     </main>
+    <router-view v-else />
 
-    <Footer />
-    <Toast />
+    <Footer v-if="!$route.meta.hideCustomerLayout" />
+    <AuthModal />
   </div>
 </template>
 

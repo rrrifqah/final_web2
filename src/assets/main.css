@@ -21,10 +21,21 @@ body {
   min-height: 100vh;
 }
 
-/* Brutalist resets */
-input, select, textarea, button {
-  font-family: inherit;
-  border-radius: 0 !important; /* rounded-none */
+/* Force brutalist styles globally */
+*, *::before, *::after {
+  border-radius: 0px !important;
+}
+
+/* Typography elements */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.05em;
+}
+
+code, pre, .font-mono {
+  font-family: 'JetBrains Mono', monospace;
 }
 
 /* Global utility styles */
@@ -35,8 +46,7 @@ input, select, textarea, button {
 .brutalist-card {
   border: 4px solid var(--border-color);
   background-color: var(--bg-primary);
-  border-radius: 0;
-  transition: all 0.15s ease-in-out;
+  transition: all 150ms ease-in-out;
 }
 
 .brutalist-button {
@@ -49,15 +59,23 @@ input, select, textarea, button {
   border-radius: 0;
   transition: all 0.15s ease-in-out;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.brutalist-button:hover {
+.brutalist-button:hover:not(:disabled) {
   background-color: var(--accent-black);
   color: var(--bg-primary);
 }
 
-.brutalist-button:active {
+.brutalist-button:active:not(:disabled) {
   transform: scale(0.95);
+}
+
+.brutalist-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .brutalist-button-red {
@@ -70,19 +88,40 @@ input, select, textarea, button {
   border-radius: 0;
   transition: all 0.15s ease-in-out;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.brutalist-button-red:hover {
+.brutalist-button-red:hover:not(:disabled) {
   background-color: var(--accent-black);
   color: white;
 }
 
-.brutalist-button-red:active {
+.brutalist-button-red:active:not(:disabled) {
   transform: scale(0.95);
+}
+
+.brutalist-button-red:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .heading-brutalist {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: -0.05em; /* tracking-tighter */
+}
+
+/* Custom Scrollbar for brutalist look */
+::-webkit-scrollbar {
+  width: 12px;
+}
+::-webkit-scrollbar-track {
+  background: var(--surface);
+  border-left: 4px solid var(--border-color);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--accent-black);
+  border: 2px solid var(--surface);
 }

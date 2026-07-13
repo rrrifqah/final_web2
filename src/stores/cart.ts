@@ -32,6 +32,10 @@ export const useCartStore = defineStore('cart', () => {
     return subtotal.value + shipping.value;
   });
 
+  const totalItems = computed(() => {
+    return cartItems.value.reduce((acc, item) => acc + item.quantity, 0);
+  });
+
   async function fetchCart() {
     isLoading.value = true;
     try {
@@ -87,6 +91,23 @@ export const useCartStore = defineStore('cart', () => {
     }
   }
 
+  async function addToCart(productId: number, quantity: number = 1) {
+    isLoading.value = true;
+    try {
+      const response = await api.post('/cart', {
+        product_id: productId,
+        quantity
+      });
+      await fetchCart();
+      return response.data;
+    } catch (err) {
+      console.error('Failed to add to cart:', err);
+      throw err;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   return {
     cartItems,
     isLoading,
@@ -94,8 +115,10 @@ export const useCartStore = defineStore('cart', () => {
     subtotal,
     shipping,
     total,
+    totalItems,
     fetchCart,
     updateQuantity,
-    removeFromCart
+    removeFromCart,
+    addToCart
   };
 });

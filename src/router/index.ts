@@ -5,10 +5,29 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/auth',
-      name: 'Auth',
-      component: () => import('@/views/customer/AuthView.vue'),
+      path: '/',
+      name: 'home',
+      component: () => import('@/views/customer/HomeView.vue'),
       meta: { requiresAuth: false }
+    },
+    {
+      path: '/catalog',
+      name: 'catalog',
+      component: () => import('@/views/customer/CatalogView.vue'),
+      meta: { requiresAuth: false }
+    },
+    {
+      path: '/product/:slug',
+      name: 'product-detail',
+      component: () => import('@/views/customer/ProductDetailView.vue'),
+      meta: { requiresAuth: false }
+    },
+    {
+      path: '/login',
+      alias: '/auth',
+      name: 'login',
+      component: () => import('@/views/customer/AuthView.vue'),
+      meta: { guestOnly: true }
     },
     // Customer views
     {
@@ -92,19 +111,47 @@ const router = createRouter({
     // Catchall
     {
       path: '/:pathMatch(.*)*',
-      redirect: '/auth'
+      redirect: '/'
     }
-  ]
+  ],
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition;
+    } else {
+      return { top: 0 };
+    }
+  }
 });
 
-
-
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
-  
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next('/auth');
-  } else if (to.meta.requiresAuth && to.meta.role && authStore.role !== to.meta.role) {
+
+  // Make sure to fetch user if logged in but state is empty
+  if (authStore.token && !authStore.user) {
+    try {
+      await authStore.fetchUser();
+    } catch (e) {
+      console.error('Session expired or token invalid:', e);
+    }
+  }
+
+  const isAuthenticated = authStore.isAuthenticated;
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const isGuestOnly = to.matched.some(record => record.meta.guestOnly);
+
+  if (requiresAuth && !isAuthenticated) {
+    localStorage.setItem('intended_url', to.fullPath);
+    next('/login');
+  } else if (isGuestOnly && isAuthenticated) {
+    // Redirect logged-in users away from login page
+    if (authStore.role === 'admin') {
+      next('/admin/dashboard');
+    } else if (authStore.role === 'kurir') {
+      next('/courier/dashboard');
+    } else {
+      next('/');
+    }
+  } else if (requiresAuth && to.meta.role && authStore.role !== to.meta.role) {
     // Redirect logic for invalid role accesses
     if (authStore.role === 'admin') {
       next('/admin/dashboard');

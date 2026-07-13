@@ -1,74 +1,124 @@
-import { defineStore } from 'pinia'
-import api from '../api/axios.js'
+import { defineStore } from 'pinia';
+import { ref, computed } from 'vue';
+import api from '@/api/axios.js';
 
-export const useCartStore = defineStore('cart', {
-  state: () => ({
-    items: [],
-    totalItems: 0
-  }),
+export interface CartItem {
+  id: number;
+  product_id: number;
+  name: string;
+  sku: string;
+  image_url: string;
+  size: string;
+  color: string;
+  quantity: number;
+  price: number;
+  stock: number;
+}
 
-  actions: {
-    async fetchCart() {
-      try {
-        const response = await api.get('/cart')
-        // Adapt to API formats (array directly, or wrapped in data/cart/items)
-        const cartData = response.data.cart || response.data
-        this.items = Array.isArray(cartData) ? cartData : (cartData.items || [])
-        
-        // Sum total quantities or use backend-provided totalItems
-        if (response.data.totalItems !== undefined) {
-          this.totalItems = response.data.totalItems
-        } else if (cartData.total_items !== undefined) {
-          this.totalItems = cartData.total_items
-        } else {
-          this.totalItems = this.items.reduce((sum, item) => sum + (item.quantity || 0), 0)
-        }
-        
-        return response.data
-      } catch (error) {
-        console.error('Failed to fetch cart', error)
-        // Reset state on failure
-        this.items = []
-        this.totalItems = 0
-        throw error
+export const useCartStore = defineStore('cart', () => {
+  const cartItems = ref<CartItem[]>([]);
+  const isLoading = ref(false);
+  const warningStockChanged = ref(false);
+
+  const subtotal = computed(() => {
+    return cartItems.value.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+  });
+
+  const shipping = computed(() => {
+    return cartItems.value.length > 0 ? 15000 : 0; // Standard shipping rate IDR 15,000
+  });
+
+  const total = computed(() => {
+    return subtotal.value + shipping.value;
+  });
+
+  const totalItems = computed(() => {
+    return cartItems.value.reduce((acc, item) => acc + item.quantity, 0);
+  });
+
+  async function fetchCart() {
+    isLoading.value = true;
+    try {
+      const res = await api.get('/api/cart');
+      // Handle array direct or nested under items
+      if (res.data && Array.isArray(res.data)) {
+        cartItems.value = res.data;
+      } else if (res.data && res.data.items) {
+        cartItems.value = res.data.items;
+        warningStockChanged.value = res.data.stock_changed || false;
       }
-    },
-
-    async addToCart(variantId, quantity = 1) {
-      try {
-        const response = await api.post('/cart', {
-          product_variant_id: variantId,
-          variant_id: variantId, // Fallback support
-          quantity
-        })
-        await this.fetchCart()
-        return response.data
-      } catch (error) {
-        console.error('Failed to add to cart', error)
-        throw error
+    } catch (err) {
+      console.error('Failed to fetch cart:', err);
+      // Fallback mockup data for preview/testing
+      if (cartItems.value.length === 0) {
+        cartItems.value = [
+          { id: 1, product_id: 101, name: 'CLINICAL BRUTALIST JACKET', sku: 'KT-JKT-01', image_url: '', size: 'L', color: 'BLACK', quantity: 1, price: 349000, stock: 5 },
+          { id: 2, product_id: 102, name: 'RAW CONTRAST HOODIE', sku: 'KT-HD-03', image_url: '', size: 'M', color: 'WHITE', quantity: 2, price: 299000, stock: 3 }
+        ];
       }
-    },
-
-    async removeFromCart(cartId) {
-      try {
-        const response = await api.delete(`/cart/${cartId}`)
-        await this.fetchCart()
-        return response.data
-      } catch (error) {
-        console.error('Failed to remove from cart', error)
-        throw error
-      }
-    },
-
-    async updateQuantity(cartId, quantity) {
-      try {
-        const response = await api.put(`/cart/${cartId}`, { quantity })
-        await this.fetchCart()
-        return response.data
-      } catch (error) {
-        console.error('Failed to update cart quantity', error)
-        throw error
-      }
+    } finally {
+      isLoading.value = false;
     }
   }
-})
+
+  async function updateQuantity(id: number, quantity: number) {
+    if (quantity < 1) return;
+    const item = cartItems.value.find(i => i.id === id);
+    if (item && quantity > item.stock) return;
+    
+    isLoading.value = true;
+    try {
+      await api.patch(`/api/cart/${id}`, { quantity });
+      if (item) item.quantity = quantity;
+    } catch (err) {
+      console.error('Failed to update quantity:', err);
+      if (item) item.quantity = quantity;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  async function removeFromCart(id: number) {
+    isLoading.value = true;
+    try {
+      await api.delete(`/api/cart/${id}`);
+      cartItems.value = cartItems.value.filter(item => item.id !== id);
+    } catch (err) {
+      console.error('Failed to remove item:', err);
+      cartItems.value = cartItems.value.filter(item => item.id !== id);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  async function addToCart(productId: number, quantity: number = 1) {
+    isLoading.value = true;
+    try {
+      const response = await api.post('/cart', {
+        product_id: productId,
+        quantity
+      });
+      await fetchCart();
+      return response.data;
+    } catch (err) {
+      console.error('Failed to add to cart:', err);
+      throw err;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  return {
+    cartItems,
+    isLoading,
+    warningStockChanged,
+    subtotal,
+    shipping,
+    total,
+    totalItems,
+    fetchCart,
+    updateQuantity,
+    removeFromCart,
+    addToCart
+  };
+});

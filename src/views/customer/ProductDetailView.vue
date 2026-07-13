@@ -20,74 +20,7 @@ const selectedSize = ref<string | null>(null)
 const quantity = ref(1)
 const activeImage = ref<string>('')
 
-// Mock Data details
-const mockProductDetails: Record<string, any> = {
-  'brutalist-overcoat': {
-    name: 'BRUTALIST OVERCOAT',
-    sku: 'SKU-OVER-09',
-    price: 1499000,
-    description: 'Heavyweight felted wool overcoat designed for harsh clinical brutalist environments. Double-breasted closure, raw edge detailing, and oversized silhouette. Engineered to resist elements while maintaining structural posture.',
-    specs: { material: 'Felted Wool 100%', category: 'Outerwear', origin: 'SECTOR_04' },
-    images: [
-      'https://images.unsplash.com/photo-1544022613-e87ca75a784a?auto=format&fit=crop&w=600&q=80',
-      'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=600&q=80',
-      'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=600&q=80'
-    ],
-    variants: [
-      { id: 101, color: 'Black', size: 'S', stock: 0 },
-      { id: 102, color: 'Black', size: 'M', stock: 8 },
-      { id: 103, color: 'Black', size: 'L', stock: 4 },
-      { id: 104, color: 'Gray', size: 'M', stock: 2 },
-      { id: 105, color: 'Gray', size: 'L', stock: 12 }
-    ]
-  },
-  'clinical-utility-vest': {
-    name: 'CLINICAL UTILITY VEST',
-    sku: 'SKU-VEST-44',
-    price: 899000,
-    description: 'High-density nylon utility vest featuring multi-pocket layout, adjustable industrial strap buckles, and integrated tactical attachment points. Clinical white line accents.',
-    specs: { material: 'Nylon Cordura', category: 'Outerwear', origin: 'SECTOR_09' },
-    images: [
-      'https://images.unsplash.com/photo-1516257984-b1b4d707412e?auto=format&fit=crop&w=600&q=80',
-      'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=600&q=80'
-    ],
-    variants: [
-      { id: 201, color: 'Gray', size: 'S', stock: 1 },
-      { id: 202, color: 'Gray', size: 'M', stock: 0 },
-      { id: 203, color: 'Gray', size: 'L', stock: 7 },
-      { id: 204, color: 'Olive', size: 'M', stock: 4 }
-    ]
-  },
-  'asymmetric-cargo-pants': {
-    name: 'ASYMMETRIC CARGO PANTS',
-    sku: 'SKU-CARG-88',
-    price: 950000,
-    description: 'Relaxed fit industrial cargo trousers featuring asymmetric pockets, raw cotton webbing straps, and ankle cinch closures. Structured clinical stitching.',
-    specs: { material: 'Cotton Ripstop', category: 'Bottoms', origin: 'SECTOR_01' },
-    images: [
-      'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=600&q=80',
-      'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=600&q=80'
-    ],
-    variants: [
-      { id: 301, color: 'Olive', size: 'S', stock: 0 },
-      { id: 302, color: 'Olive', size: 'M', stock: 0 },
-      { id: 303, color: 'Black', size: 'S', stock: 0 },
-      { id: 304, color: 'Black', size: 'M', stock: 0 }
-    ]
-  }
-}
 
-// Master list reference from home
-const mockCatalogProducts = [
-  { id: 1, name: 'BRUTALIST OVERCOAT', slug: 'brutalist-overcoat', sku: 'SKU-OVER-09', price: 1499000, category: 'outerwear', image_url: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?auto=format&fit=crop&w=600&q=80' },
-  { id: 2, name: 'CLINICAL UTILITY VEST', slug: 'clinical-utility-vest', sku: 'SKU-VEST-44', price: 899000, category: 'outerwear', image_url: 'https://images.unsplash.com/photo-1516257984-b1b4d707412e?auto=format&fit=crop&w=600&q=80' },
-  { id: 3, name: 'ASYMMETRIC CARGO PANTS', slug: 'asymmetric-cargo-pants', sku: 'SKU-CARG-88', price: 950000, category: 'bottoms', image_url: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=600&q=80' },
-  { id: 4, name: 'RAW EDGE SWEATSHIRT', slug: 'raw-edge-sweatshirt', sku: 'SKU-SWEA-21', price: 799000, category: 'tops', image_url: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=600&q=80' },
-  { id: 5, name: 'MODULAR BACKPACK', slug: 'modular-backpack', sku: 'SKU-BACK-12', price: 1200000, category: 'accessories', image_url: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=600&q=80' },
-  { id: 6, name: 'STRAP BOOTS HIGH-TOP', slug: 'strap-boots-high-top', sku: 'SKU-BOOT-07', price: 2199000, category: 'shoes', image_url: 'https://images.unsplash.com/photo-1520639888713-7851133b1ed0?auto=format&fit=crop&w=600&q=80' },
-  { id: 7, name: 'INDUSTRIAL BELT RED', slug: 'industrial-belt-red', sku: 'SKU-BELT-32', price: 350000, category: 'accessories', image_url: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=600&q=80' },
-  { id: 8, name: 'HEAVYWEIGHT TEE BLACK', slug: 'heavyweight-tee-black', sku: 'SKU-TEEE-01', price: 450000, category: 'tops', image_url: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600&q=80' }
-]
 
 // Available colors list computed from variants
 const availableColors = computed(() => {
@@ -157,34 +90,8 @@ const loadProductDetail = async () => {
     const response = await api.get(`/products/${slug}`)
     product.value = response.data.data || response.data
   } catch (error) {
-    console.warn(`Failed fetching API for product detail of ${slug}, loading mock database fallback:`, error)
-    
-    const details = mockProductDetails[slug]
-    if (details) {
-      product.value = details
-    } else {
-      // Dynamic details generation for remaining categories
-      const basic = mockCatalogProducts.find(p => p.slug === slug) || mockCatalogProducts[0]!
-      product.value = {
-        name: basic.name,
-        sku: basic.sku,
-        price: basic.price,
-        description: `Industrial high-contrast ${basic.name.toLowerCase()} styled for clinical-brutalist wardrobes. Heavyweight build featuring raw elements and premium accents.`,
-        specs: { material: 'Industrial Canvas 100%', category: basic.category.toUpperCase(), origin: 'SECTOR_02' },
-        images: [
-          basic.image_url,
-          'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=600&q=80',
-          'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=600&q=80'
-        ],
-        variants: [
-          { id: basic.id * 100 + 1, color: 'Black', size: 'S', stock: 2 },
-          { id: basic.id * 100 + 2, color: 'Black', size: 'M', stock: 12 },
-          { id: basic.id * 100 + 3, color: 'Black', size: 'L', stock: 0 },
-          { id: basic.id * 100 + 4, color: 'White', size: 'M', stock: 4 },
-          { id: basic.id * 100 + 5, color: 'White', size: 'L', stock: 1 }
-        ]
-      }
-    }
+    console.error(`Failed fetching API for product detail of ${slug}:`, error)
+    product.value = null
   } finally {
     if (product.value) {
       activeImage.value = product.value.images?.[0] || product.value.image_url || product.value.image
@@ -215,7 +122,7 @@ const handleAddToCart = async () => {
 
   isSubmitting.value = true
   try {
-    await cartStore.addToCart(selectedVariant.value.id, quantity.value)
+    await cartStore.addToCart(product.value.id, quantity.value)
     showToast(`SUCCESS: ADDED x${quantity.value} ITEM(S) TO PIPELINE`)
     
     // Reset inputs
@@ -444,6 +351,25 @@ const showToast = (message: string) => {
         </div>
       </div>
 
+    </div>
+
+    <!-- Empty State -->
+    <div v-else class="border-4 border-black bg-white py-16 px-4 flex flex-col items-center justify-center space-y-4 shadow-[6px_6px_0px_#CC0000] text-center">
+      <div class="bg-[#CC0000] text-white border-2 border-black font-mono text-xs px-3 py-1 font-bold select-none tracking-widest uppercase">
+        NO_DATA_AVAILABLE
+      </div>
+      <h2 class="text-2xl font-black uppercase tracking-tight text-black">
+        PRODUCT NOT FOUND.
+      </h2>
+      <p class="text-sm font-medium text-gray-500 max-w-md">
+        The requested product could not be found or the database is unavailable.
+      </p>
+      <router-link 
+        to="/catalog"
+        class="mt-4 px-6 py-3 bg-black text-white border-2 border-black font-black uppercase text-xs hover:bg-[#CC0000] transition-all active:scale-95 shadow-[4px_4px_0px_#000000] inline-block"
+      >
+        RETURN_TO_CATALOG
+      </router-link>
     </div>
   </div>
 </template>

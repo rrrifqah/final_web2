@@ -47,12 +47,8 @@ const handleSecureOrder = async (event: Event) => {
     return
   }
 
-  // Get the first variant that has stock, or fall back to any variant or product ID
-  const availableVariant = props.product.variants?.find(v => v.stock > 0) || props.product.variants?.[0]
-  const variantId = availableVariant?.id || props.product.id
-
   try {
-    await cartStore.addToCart(variantId, 1)
+    await cartStore.addToCart(props.product.id, 1)
     // Custom brutalist flash alert/toast
     showToast(`ADDED: ${props.product.name.toUpperCase()} TO CART`)
   } catch (error) {

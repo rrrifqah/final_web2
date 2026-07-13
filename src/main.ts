@@ -4,7 +4,7 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import vue3GoogleLogin from 'vue3-google-login'
 import App from './App.vue'
-import router from './router/index.js'
+import router from './router'
 
 const app = createApp(App)
 

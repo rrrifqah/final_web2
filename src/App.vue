@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { RouterView } from 'vue-router'
+import Toast from '@/components/shared/Toast.vue'
 import Navbar from './components/Navbar.vue'
 import Footer from './components/Footer.vue'
 import { onMounted } from 'vue'
-import { useAuthStore } from './stores/auth.js'
-import { useCartStore } from './stores/cart.js'
+import { useAuthStore } from '@/stores/auth'
+import { useCartStore } from '@/stores/cart'
 
 const authStore = useAuthStore()
 const cartStore = useCartStore()
@@ -25,10 +27,11 @@ onMounted(async () => {
     <Navbar />
     
     <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <router-view />
+      <RouterView />
     </main>
 
     <Footer />
+    <Toast />
   </div>
 </template>
 
